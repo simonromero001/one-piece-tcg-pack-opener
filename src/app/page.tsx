@@ -10,12 +10,19 @@ import Tilt from "react-parallax-tilt";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+interface Card {
+  _id: string;
+  name: string;
+  imageUrl: string;
+  isFlipped: boolean;
+}
+
 export default function Home() {
-  const [cards, setCards] = useState([]);
-  const [packId, setPackId] = useState("");
+  const [cards, setCards] = useState<Card[]>([]);
+  const [packId, setPackId] = useState<string>("");
   const [flipping, setFlipping] = useState(false); // Add flipping state
 
-  const createPack = async () => {
+  const createPack = async (): Promise<string | null> => {
     try {
       const response = await axios.post(
         "https://one-pack-1228fb95d343.herokuapp.com/api/packs/create-pack",
@@ -33,7 +40,7 @@ export default function Home() {
     }
   };
 
-  const openPack = async (packId) => {
+  const openPack = async (packId: string): Promise<void> => {
     if (!packId) {
       console.error("Pack ID is not set.");
       return;
@@ -43,7 +50,7 @@ export default function Home() {
         "https://one-pack-1228fb95d343.herokuapp.com/api/packs/open",
         { packId }
       );
-      const fetchedCards = response.data.map((card) => ({
+      const fetchedCards: Card[] = response.data.map((card: Card) => ({
         ...card,
         isFlipped: false,
       }));
@@ -57,7 +64,7 @@ export default function Home() {
     }
   };
 
-  const flipCardsOneByOne = (index) => {
+  const flipCardsOneByOne = (index: number): void => {
     if (index === 0) setFlipping(true); // Set flipping state to true at the start
 
     if (index >= cards.length) {
@@ -80,7 +87,7 @@ export default function Home() {
     setTimeout(() => flipCardsOneByOne(index + 1), 500); // Adjust the delay for smoother effect
   };
 
-  const handleOpenNewPack = async () => {
+  const handleOpenNewPack = async (): Promise<void> => {
     if (flipping) {
       console.error("Cards are flipping, cannot open a new pack.");
       return;
