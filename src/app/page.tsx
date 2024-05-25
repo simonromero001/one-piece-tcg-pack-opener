@@ -18,7 +18,7 @@ export default function Home() {
   const createPack = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/packs/create-pack",
+        "https://one-pack-1228fb95d343.herokuapp.com/api/packs/create-pack",
         {
           name: "Common Pack",
         }
@@ -40,7 +40,7 @@ export default function Home() {
     }
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/packs/open",
+        "https://one-pack-1228fb95d343.herokuapp.com/api/packs/open",
         { packId }
       );
       const fetchedCards = response.data.map((card) => ({
@@ -197,7 +197,7 @@ export default function Home() {
                       <img
                         className="object-cover w-full h-auto transition-opacity duration-500 ease-in-out"
                         alt={`Card ${index + 1}`}
-                        src={`http://localhost:5000${card.imageUrl}`}
+                        src={card.imageUrl} // Use the imageUrl directly
                       />
                     </div>
                     <div
