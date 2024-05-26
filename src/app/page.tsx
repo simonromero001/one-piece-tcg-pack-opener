@@ -33,10 +33,6 @@ export default function Home() {
   const [isUserScrolling, setIsUserScrolling] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsUserScrolling(true);
-    };
-
     const handleWheel = () => {
       setIsUserScrolling(true);
     };
@@ -45,12 +41,10 @@ export default function Home() {
       setIsUserScrolling(true);
     };
 
-    window.addEventListener("scroll", handleScroll);
     window.addEventListener("wheel", handleWheel);
     window.addEventListener("touchmove", handleTouchMove);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchmove", handleTouchMove);
     };
@@ -116,7 +110,11 @@ export default function Home() {
 
     const cardElement = document.getElementById(`card-${index}`);
     if (cardElement && !isUserScrolling) {
-      cardElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      cardElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
     }
 
     setTimeout(() => flipCardsOneByOne(index + 1), 500);
