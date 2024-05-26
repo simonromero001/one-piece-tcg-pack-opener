@@ -29,19 +29,30 @@ export default function Home() {
   const [packId, setPackId] = useState<string>("");
   const [flipping, setFlipping] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [buttonText, setButtonText] = useState("Open New Pack"); // Add state for button text
-  const userStartedScrolling = useRef(false); // Flag to track if the user starts scrolling
+  const [buttonText, setButtonText] = useState("Open New Pack");
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!userStartedScrolling.current) {
-        userStartedScrolling.current = true;
-      }
+      setIsUserScrolling(true);
+    };
+
+    const handleWheel = () => {
+      setIsUserScrolling(true);
+    };
+
+    const handleTouchMove = () => {
+      setIsUserScrolling(true);
     };
 
     window.addEventListener("scroll", handleScroll);
+    window.addEventListener("wheel", handleWheel);
+    window.addEventListener("touchmove", handleTouchMove);
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchmove", handleTouchMove);
     };
   }, []);
 
@@ -92,8 +103,8 @@ export default function Home() {
 
     if (index >= cards.length) {
       setFlipping(false);
-      setButtonDisabled(false); // Enable the button after the last card is flipped
-      setButtonText("Open New Pack"); // Revert button text back to "Open New Pack"
+      setButtonDisabled(false);
+      setButtonText("Open New Pack");
       return;
     }
 
@@ -104,7 +115,7 @@ export default function Home() {
     );
 
     const cardElement = document.getElementById(`card-${index}`);
-    if (cardElement && !userStartedScrolling.current) {
+    if (cardElement && !isUserScrolling) {
       cardElement.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
@@ -117,16 +128,16 @@ export default function Home() {
       return;
     }
 
-    setButtonDisabled(true); // Disable button immediately on click
-    setButtonText("Opening..."); // Change button text to "Opening..."
-    userStartedScrolling.current = false; // Reset the user scrolling flag
+    setButtonDisabled(true);
+    setButtonText("Opening...");
+    setIsUserScrolling(false);
     const newPackId = await createPack();
     if (newPackId) {
       await openPack(newPackId);
     } else {
       console.error("Failed to create pack, cannot open pack.");
-      setButtonDisabled(false); // Re-enable the button if pack creation fails
-      setButtonText("Open New Pack"); // Revert button text back to "Open New Pack"
+      setButtonDisabled(false);
+      setButtonText("Open New Pack");
     }
   };
 
