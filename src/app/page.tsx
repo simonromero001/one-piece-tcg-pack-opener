@@ -83,6 +83,8 @@ export default function Home() {
         isFlipped: false,
       }));
 
+      setIsUserScrolling(false);
+
       setTimeout(() => {
         setCards(fetchedCards);
         setTimeout(() => flipCardsOneByOne(0), 500);
