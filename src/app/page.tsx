@@ -18,9 +18,16 @@ interface Card {
 }
 
 export default function Home() {
-  const [cards, setCards] = useState<Card[]>([]);
+  const [cards, setCards] = useState<Card[]>(
+    Array.from({ length: 10 }, (_, index) => ({
+      _id: `placeholder-${index}`,
+      name: `Card ${index + 1}`,
+      imageUrl: "/resources/opcardback.png", // Preload with card back image
+      isFlipped: false,
+    }))
+  );
   const [packId, setPackId] = useState<string>("");
-  const [flipping, setFlipping] = useState(false); // Add flipping state
+  const [flipping, setFlipping] = useState(false);
 
   const createPack = async (): Promise<string | null> => {
     try {
@@ -57,18 +64,18 @@ export default function Home() {
 
       setTimeout(() => {
         setCards(fetchedCards);
-        setTimeout(() => flipCardsOneByOne(0), 500); // Start flipping the cards from the first one with a delay
-      }, 500); // Add delay before setting the cards
+        setTimeout(() => flipCardsOneByOne(0), 500);
+      }, 500);
     } catch (error) {
       console.error("Error opening pack:", error);
     }
   };
 
   const flipCardsOneByOne = (index: number): void => {
-    if (index === 0) setFlipping(true); // Set flipping state to true at the start
+    if (index === 0) setFlipping(true);
 
     if (index >= cards.length) {
-      setFlipping(false); // Set flipping state to false when done
+      setFlipping(false);
       return;
     }
 
@@ -78,13 +85,12 @@ export default function Home() {
       )
     );
 
-    // Auto-scroll functionality
     const cardElement = document.getElementById(`card-${index}`);
     if (cardElement) {
       cardElement.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
-    setTimeout(() => flipCardsOneByOne(index + 1), 500); // Adjust the delay for smoother effect
+    setTimeout(() => flipCardsOneByOne(index + 1), 500);
   };
 
   const handleOpenNewPack = async (): Promise<void> => {
@@ -160,20 +166,19 @@ export default function Home() {
               </Transition>
             </Menu>
           </div>
-                  */}
+          */}
         </div>
         <div className="flex justify-center mt-8">
           <button
             onClick={handleOpenNewPack}
             className={`px-6 py-4 bg-black text-white rounded-md shadow-md ${
               flipping ? "opacity-50 cursor-not-allowed" : ""
-            }`} // Disable button visually
-            disabled={flipping} // Disable button functionality
+            }`}
+            disabled={flipping}
           >
             Open New Pack
           </button>
         </div>
-        {/* Start of Grid of cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
           {cards.map((card, index) => (
             <Tilt
@@ -204,7 +209,7 @@ export default function Home() {
                       <img
                         className="object-cover w-full h-auto transition-opacity duration-500 ease-in-out"
                         alt={`Card ${index + 1}`}
-                        src={card.imageUrl} // Use the imageUrl directly
+                        src={card.imageUrl}
                       />
                     </div>
                     <div
@@ -226,7 +231,6 @@ export default function Home() {
             </Tilt>
           ))}
         </div>
-        {/* End of Grid of cards */}
       </div>
     </div>
   );
