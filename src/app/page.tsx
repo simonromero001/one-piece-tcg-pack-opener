@@ -28,6 +28,7 @@ export default function Home() {
   );
   const [packId, setPackId] = useState<string>("");
   const [flipping, setFlipping] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false); // Add state for button disabled
 
   const createPack = async (): Promise<string | null> => {
     try {
@@ -94,17 +95,19 @@ export default function Home() {
   };
 
   const handleOpenNewPack = async (): Promise<void> => {
-    if (flipping) {
-      console.error("Cards are flipping, cannot open a new pack.");
+    if (flipping || buttonDisabled) {
+      console.error("Cards are flipping or button is disabled, cannot open a new pack.");
       return;
     }
 
+    setButtonDisabled(true); // Disable button immediately on click
     const newPackId = await createPack();
     if (newPackId) {
-      openPack(newPackId);
+      await openPack(newPackId);
     } else {
       console.error("Failed to create pack, cannot open pack.");
     }
+    setButtonDisabled(false); // Enable button after processing
   };
 
   return (
@@ -172,9 +175,9 @@ export default function Home() {
           <button
             onClick={handleOpenNewPack}
             className={`px-6 py-4 bg-black text-white rounded-md shadow-md ${
-              flipping ? "opacity-50 cursor-not-allowed" : ""
+              flipping || buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={flipping}
+            disabled={flipping || buttonDisabled}
           >
             Open New Pack
           </button>
