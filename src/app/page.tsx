@@ -240,6 +240,11 @@ export default function Home() {
           ))}
         </div>
       </div>
+      <footer className="w-full bg-gray-200 text-center py-4 mt-8">
+        <p className="text-sm text-gray-600">
+          This website is not produced, endorsed, supported, or affiliated with Bandai, Toei Animation, Shueisha, or Eiichiro Oda.
+        </p>
+      </footer>
     </div>
   );
 }
