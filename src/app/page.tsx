@@ -7,7 +7,7 @@ import {
   Transition,
 } from "@headlessui/react";
 import Tilt from "react-parallax-tilt";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 interface Card {
@@ -29,39 +29,7 @@ export default function Home() {
   const [packId, setPackId] = useState<string>("");
   const [flipping, setFlipping] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [buttonText, setButtonText] = useState("Open New Pack");
-  const [isUserScrolling, setIsUserScrolling] = useState(false);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    const handleWheel = () => {
-      setIsUserScrolling(true);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-      scrollTimeoutRef.current = setTimeout(() => {
-        setIsUserScrolling(false);
-      }, 2000); // Reset user scrolling state after 2 seconds of inactivity
-    };
-
-    const handleTouchMove = () => {
-      setIsUserScrolling(true);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-      scrollTimeoutRef.current = setTimeout(() => {
-        setIsUserScrolling(false);
-      }, 2000); // Reset user scrolling state after 2 seconds of inactivity
-    };
-
-    window.addEventListener("wheel", handleWheel);
-    window.addEventListener("touchmove", handleTouchMove);
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, []);
+  const [buttonText, setButtonText] = useState("Open New Pack"); // Add state for button text
 
   const createPack = async (): Promise<string | null> => {
     try {
@@ -96,8 +64,6 @@ export default function Home() {
         isFlipped: false,
       }));
 
-      setIsUserScrolling(false);
-
       setTimeout(() => {
         setCards(fetchedCards);
         setTimeout(() => flipCardsOneByOne(0), 500);
@@ -112,8 +78,8 @@ export default function Home() {
 
     if (index >= cards.length) {
       setFlipping(false);
-      setButtonDisabled(false);
-      setButtonText("Open New Pack");
+      setButtonDisabled(false); // Enable the button after the last card is flipped
+      setButtonText("Open New Pack"); // Revert button text back to "Open New Pack"
       return;
     }
 
@@ -124,12 +90,8 @@ export default function Home() {
     );
 
     const cardElement = document.getElementById(`card-${index}`);
-    if (cardElement && !isUserScrolling) {
-      cardElement.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-        inline: "center",
-      });
+    if (cardElement) {
+      cardElement.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     setTimeout(() => flipCardsOneByOne(index + 1), 500);
@@ -141,16 +103,15 @@ export default function Home() {
       return;
     }
 
-    setButtonDisabled(true);
-    setButtonText("Opening...");
-    setIsUserScrolling(false);
+    setButtonDisabled(true); // Disable button immediately on click
+    setButtonText("Opening..."); // Change button text to "Opening..."
     const newPackId = await createPack();
     if (newPackId) {
       await openPack(newPackId);
     } else {
       console.error("Failed to create pack, cannot open pack.");
-      setButtonDisabled(false);
-      setButtonText("Open New Pack");
+      setButtonDisabled(false); // Re-enable the button if pack creation fails
+      setButtonText("Open New Pack"); // Revert button text back to "Open New Pack"
     }
   };
 
@@ -279,11 +240,6 @@ export default function Home() {
           ))}
         </div>
       </div>
-      <footer className="w-full bg-gray-200 text-center py-4 mt-8">
-        <p className="text-sm text-gray-600">
-          This website is not produced, endorsed, supported, or affiliated with Toei Animation, Shueisha, or Eiichiro Oda.
-        </p>
-      </footer>
     </div>
   );
 }
