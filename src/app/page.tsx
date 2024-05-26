@@ -29,6 +29,7 @@ export default function Home() {
   const [packId, setPackId] = useState<string>("");
   const [flipping, setFlipping] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [buttonText, setButtonText] = useState("Open New Pack"); // Add state for button text
 
   const createPack = async (): Promise<string | null> => {
     try {
@@ -78,6 +79,7 @@ export default function Home() {
     if (index >= cards.length) {
       setFlipping(false);
       setButtonDisabled(false); // Enable the button after the last card is flipped
+      setButtonText("Open New Pack"); // Revert button text back to "Open New Pack"
       return;
     }
 
@@ -102,12 +104,14 @@ export default function Home() {
     }
 
     setButtonDisabled(true); // Disable button immediately on click
+    setButtonText("Opening..."); // Change button text to "Opening..."
     const newPackId = await createPack();
     if (newPackId) {
       await openPack(newPackId);
     } else {
       console.error("Failed to create pack, cannot open pack.");
       setButtonDisabled(false); // Re-enable the button if pack creation fails
+      setButtonText("Open New Pack"); // Revert button text back to "Open New Pack"
     }
   };
 
@@ -180,7 +184,7 @@ export default function Home() {
             }`}
             disabled={flipping || buttonDisabled}
           >
-            Open New Pack
+            {buttonText}
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
