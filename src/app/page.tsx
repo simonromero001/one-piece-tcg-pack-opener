@@ -19,7 +19,7 @@ interface Card {
 
 export default function Home() {
   const [cards, setCards] = useState<Card[]>(
-    Array.from({ length: 10 }, (_, index) => ({
+    Array.from({ length: 12 }, (_, index) => ({
       _id: `placeholder-${index}`,
       name: `Card ${index + 1}`,
       imageUrl: "/resources/opcardback.png", // Preload with card back image
