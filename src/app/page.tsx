@@ -7,7 +7,7 @@ import {
   Transition,
 } from "@headlessui/react";
 import Tilt from "react-parallax-tilt";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 interface Card {
@@ -30,6 +30,18 @@ export default function Home() {
   const [flipping, setFlipping] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [buttonText, setButtonText] = useState("Open New Pack"); // Add state for button text
+  const userScrolling = useRef(false); // Flag to track if the user is scrolling
+
+  useEffect(() => {
+    const handleScroll = () => {
+      userScrolling.current = true;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const createPack = async (): Promise<string | null> => {
     try {
@@ -90,7 +102,7 @@ export default function Home() {
     );
 
     const cardElement = document.getElementById(`card-${index}`);
-    if (cardElement) {
+    if (cardElement && !userScrolling.current) {
       cardElement.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
@@ -105,6 +117,7 @@ export default function Home() {
 
     setButtonDisabled(true); // Disable button immediately on click
     setButtonText("Opening..."); // Change button text to "Opening..."
+    userScrolling.current = false; // Reset the user scrolling flag
     const newPackId = await createPack();
     if (newPackId) {
       await openPack(newPackId);
@@ -242,7 +255,7 @@ export default function Home() {
       </div>
       <footer className="w-full bg-gray-200 text-center py-4 mt-8">
         <p className="text-sm text-gray-600">
-          This website is not produced, endorsed, supported, or affiliated with Bandai, Toei Animation, Shueisha, or Eiichiro Oda.
+          This website is not produced, endorsed, supported, or affiliated with Toei Animation, Shueisha, or Eiichiro Oda.
         </p>
       </footer>
     </div>
