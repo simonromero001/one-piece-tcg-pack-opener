@@ -30,11 +30,13 @@ export default function Home() {
   const [flipping, setFlipping] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [buttonText, setButtonText] = useState("Open New Pack"); // Add state for button text
-  const userScrolling = useRef(false); // Flag to track if the user is scrolling
+  const userStartedScrolling = useRef(false); // Flag to track if the user starts scrolling
 
   useEffect(() => {
     const handleScroll = () => {
-      userScrolling.current = true;
+      if (!userStartedScrolling.current) {
+        userStartedScrolling.current = true;
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -102,7 +104,7 @@ export default function Home() {
     );
 
     const cardElement = document.getElementById(`card-${index}`);
-    if (cardElement && !userScrolling.current) {
+    if (cardElement && !userStartedScrolling.current) {
       cardElement.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
@@ -117,7 +119,7 @@ export default function Home() {
 
     setButtonDisabled(true); // Disable button immediately on click
     setButtonText("Opening..."); // Change button text to "Opening..."
-    userScrolling.current = false; // Reset the user scrolling flag
+    userStartedScrolling.current = false; // Reset the user scrolling flag
     const newPackId = await createPack();
     if (newPackId) {
       await openPack(newPackId);
