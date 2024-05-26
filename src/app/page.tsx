@@ -31,14 +31,27 @@ export default function Home() {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [buttonText, setButtonText] = useState("Open New Pack");
   const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleWheel = () => {
       setIsUserScrolling(true);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsUserScrolling(false);
+      }, 2000); // Reset user scrolling state after 2 seconds of inactivity
     };
 
     const handleTouchMove = () => {
       setIsUserScrolling(true);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsUserScrolling(false);
+      }, 2000); // Reset user scrolling state after 2 seconds of inactivity
     };
 
     window.addEventListener("wheel", handleWheel);
